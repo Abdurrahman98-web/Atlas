@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <title>Document</title>
+  </head>
+  <style>
+    .col-2 img {
+      height: 120px;
+    }
+  </style>
+
+  <body>
+    <div class="container my-5">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="input-group">
+            <input type="text" id="txtSearch" class="form-control" />
+            <button type="button" id="btnSearch" class="btn btn-primary">
+              Yukle
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3" id="country-detals"></div>
+      <div class="card mb-3" id="NgCountry">
+        <div class="card-header">
+          <h2>Komsu ulkler</h2>
+        </div>
+        <div class="card-body">
+          <div class="row"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // const title=document.querySelector(".card-titel");
+      document.querySelector("#btnSearch").addEventListener("click", () => {
+        let country = document.querySelector("#txtSearch").value;
+        // const ERR=new Promise((resolve,reject)=>{
+        //   setTimeout(()=>{if{}}
+        //   )
+
+        // })
+        getCountry(country);
+      });
+      function getCountry(country) {
+        fetch("https://restcountries.com/v3.1/name/" + country)
+          .then((ResponsF) => ResponsF.json())
+          .then((data) => {
+            console.log(data);
+            setCountry(data[0]);
+            console.log(data[0].borders.toString());
+            const NG = data[0].borders.toString();
+            return fetch("https://restcountries.com/v3.1/alpha?codes=" + NG);
+          
+          })
+          .then(ResponsE =>ResponsE.json())
+          .then(dataB =>{
+            console.log(dataB);
+           NgCountry(dataB); 
+          }
+
+          )
+          // .then((dataB) => {
+          //       return dataB.json();
+          //     })
+          //     .then((dataB) => {
+          //       for (let i of dataB) {
+          //         setCountry(i);
+          //       }
+          //       NgCountry(dataB);
+          //     });
+
+        // const requeestA = new XMLHttpRequest();
+        // requeestA.open("GET", "https://restcountries.com/v3.1/name/" + country);
+        // requeestA.send();
+        // requeestA.addEventListener("load", function () {
+        //   const data = JSON.parse(this.responseText);
+        //   console.log(data[0].name.common);
+        //   console.log(data[0]);
+        //   console.log(data);
+        //   console.log(typeof data);
+
+        //   setCountry(data[0]);
+        //   console.log(data[0].borders.toString());
+        //   const NG = data[0].borders.toString();
+        //   const requeestB = new XMLHttpRequest();
+        //   requeestB.open(
+        //     "GET",
+        //     "https://restcountries.com/v3.1/alpha?codes=" + NG
+        //   );
+        //   requeestB.send();
+        //   requeestB.addEventListener("load", function () {
+        //     const dataB = JSON.parse(this.responseText);
+        //     console.log(Object.values(dataB));
+        //     // for(let i of dataB){setCountry(i)};
+        //     NgCountry(dataB);
+        //   });
+        // });
+      }
+
+      function setCountry(data) {
+        console.log(data);
+        const html = `
+        <div class="card-header">
+          <h2> Arama Sounclari</h2>
+        </div>
+        <div class="card-body">
+          <div class="row">
+          <div class="col-4">
+            <img src="${data.flags.png}" class="card-img-top" alt=""${
+          data.flags.alt
+        }" ">
+          </div>
+          <div class="col-8">
+             <div class="card-titel">
+               <h3>${data.name.common}</h3>
+             </div>
+             <hr>
+            <div class="row">
+              <div class="col-4">Nufus:</div>
+              <div class="col-8"> ${(data.population / 1000000).toFixed(
+                2
+              )} milyon</div>
+            </div>
+            <div class="row">
+              <div class="col-4">Sinirdaşlar:</div>
+              <div class="col-8">${data.borders} </div>
+            </div>
+            <div class="row">
+              <div class="col-4">Konuşlan Dil:</div>
+              <div class="col-8">${Object.values(data.languages)} </div>
+            </div>
+            <div class="row">
+              <div class="col-4">Başkent :</div>
+              <div class="col-8">${data.capital[0]} </div>
+            </div>
+          </div>
+        </div>`;
+
+        document.querySelector("#country-detals").innerHTML = html;
+      }
+      function NgCountry(dataB) {
+        let htmlB = "";
+        for (let i of dataB) {
+          htmlB += `
+      <div class="col-2">
+       <div class="card m-3 h-3" onclick="getCountry('${i.name.common}')">
+         <img src="${i.flags.png}" class="card-img-top" alt="${i.flags.alt}">
+         <div class="card-body">
+           <div class="card-title">
+            <h6>${i.name.common}</h6>
+           </div>
+         </div>
+        </div>
+      </div>
+
+
+      `;
+        }
+        document.querySelector("#NgCountry .card-body .row").innerHTML = htmlB;
+      }
+    </script>
+  </body>
+</html>
